@@ -649,6 +649,27 @@
     }
     .footer-links a:hover { color: var(--text-muted); }
 
+    /* ── Hero Socials ── */
+    .hero-socials {
+      display: flex;
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .social-link {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.3s;
+      letter-spacing: 0.02em;
+    }
+    .social-link:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .hero { padding: 100px 0 60px; min-height: auto; }
@@ -674,7 +695,8 @@
     <div class="nav-links">
       <a href="#phases">Phases</a>
       <a href="#product">Guide</a>
-      <a href="https://x.com/mikeopbot" target="_blank">@mikeopbot</a>
+      <a href="https://x.com/mikeopbot" target="_blank">𝕏 @mikeopbot</a>
+      <a href="https://tiktok.com/@mikeopbot" target="_blank">TikTok</a>
       <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-nav" target="_blank">Get the Guide — $47</a>
     </div>
   </div>
@@ -698,6 +720,10 @@
     <div class="cta-group">
       <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-primary" target="_blank">Get the Playbook — $47</a>
       <span class="cta-meta">PDF &middot; <strong>Instant download</strong> &middot; 10 phases &middot; 43 pages</span>
+    </div>
+    <div class="hero-socials">
+      <a href="https://x.com/mikeopbot" target="_blank" class="social-link">𝕏 @mikeopbot</a>
+      <a href="https://tiktok.com/@mikeopbot" target="_blank" class="social-link">TikTok @mikeopbot</a>
     </div>
   </div>
 </section>
