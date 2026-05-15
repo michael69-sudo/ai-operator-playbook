@@ -109,6 +109,24 @@
       box-shadow: 0 4px 20px var(--accent-glow);
     }
 
+    /* ── Mobile Nav CTA ── */
+    .btn-nav-mobile {
+      display: none;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 8px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .btn-nav-mobile:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
     /* ── Container ── */
     .container { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
 
@@ -513,7 +531,7 @@
     /* ── Stats ── */
     .stats-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 1px;
       background: var(--border);
       border: 1px solid var(--border);
@@ -679,6 +697,101 @@
       border-color: var(--accent);
     }
 
+    /* ── Lead Magnet ── */
+    .lead-magnet {
+      text-align: center;
+      position: relative;
+    }
+    .lead-magnet::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(196, 163, 90, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .lead-magnet-box {
+      max-width: 520px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px 40px;
+      position: relative;
+      z-index: 2;
+    }
+    .lead-magnet-box h3 {
+      font-family: var(--serif);
+      font-size: clamp(20px, 3vw, 26px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .lead-magnet-box h3 em {
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .lead-magnet-box .lm-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .lead-magnet-form {
+      display: flex;
+      gap: 10px;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .lead-magnet-form input[type="email"] {
+      flex: 1;
+      font-family: var(--sans);
+      font-size: 14px;
+      padding: 14px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .lead-magnet-form input[type="email"]::placeholder {
+      color: var(--text-dim);
+    }
+    .lead-magnet-form input[type="email"]:focus {
+      border-color: var(--accent);
+    }
+    .lead-magnet-form button {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--bg);
+      background: var(--accent);
+      border: none;
+      padding: 14px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.3s;
+    }
+    .lead-magnet-form button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+    .lead-magnet-box .lm-note {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+      margin-top: 16px;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .hero { padding: 100px 0 60px; min-height: auto; }
@@ -687,13 +800,37 @@
       .phases-grid { grid-template-columns: 1fr; }
       .product-section { grid-template-columns: 1fr; gap: 40px; }
       .product-visual { order: -1; }
-      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .stats-row { grid-template-columns: 1fr; }
       .fit-grid { grid-template-columns: 1fr; }
       .nav-links { display: none; }
+      .btn-nav-mobile { display: inline-block; }
       .cta-group { flex-direction: column; align-items: flex-start; }
       .footer-inner { flex-direction: column; gap: 16px; }
+      .lead-magnet-form { flex-direction: column; }
+      .lead-magnet-box { padding: 36px 24px; }
     }
   </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "The AI Operator Playbook",
+    "description": "A step-by-step guide to building an AI agent that runs your business while you sleep",
+    "url": "https://michaelwongera.gumroad.com/l/lqexxh",
+    "brand": {
+      "@type": "Brand",
+      "name": "MikeOpBot"
+    },
+    "category": "Digital Product / Ebook",
+    "offers": {
+      "@type": "Offer",
+      "price": "47.00",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock",
+      "url": "https://michaelwongera.gumroad.com/l/lqexxh"
+    }
+  }
+  </script>
 </head>
 <body>
 
@@ -708,6 +845,7 @@
       <a href="https://tiktok.com/@mikeopbot" target="_blank">TikTok</a>
       <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-nav" target="_blank">Get the Guide — $47</a>
     </div>
+    <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-nav-mobile" target="_blank">Get the Guide — $47</a>
   </div>
 </nav>
 
@@ -922,10 +1060,6 @@
         <div class="stat-label">Saved per day</div>
       </div>
       <div class="stat-card">
-        <div class="stat-num">150</div>
-        <div class="stat-label">Leads pushed daily</div>
-      </div>
-      <div class="stat-card">
         <div class="stat-num gold">24/7</div>
         <div class="stat-label">Active without input</div>
       </div>
@@ -956,6 +1090,22 @@
           <li>People expecting overnight passive income</li>
         </ul>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- Lead Magnet -->
+<section class="lead-magnet">
+  <div class="container">
+    <div class="lead-magnet-box">
+      <div class="section-label">Not ready to buy?</div>
+      <h3>Get the free preview — <em>Introduction + Phase 1</em></h3>
+      <p class="lm-sub">See exactly how the system works before you commit. Get the Introduction and Phase 1 of the Playbook delivered to your inbox — free, no strings.</p>
+      <form class="lead-magnet-form" action="/api/subscribe" method="POST">
+        <input type="email" name="email" placeholder="you@email.com" required />
+        <button type="submit">Send the Preview</button>
+      </form>
+      <p class="lm-note">No spam. Unsubscribe anytime.</p>
     </div>
   </div>
 </section>
