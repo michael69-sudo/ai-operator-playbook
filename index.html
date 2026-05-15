@@ -4,291 +4,664 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The AI Operator Playbook — Build a Fully Autonomous AI Business Agent</title>
-  <meta name="description" content="Step-by-step guide to building an AI agent that runs your business while you sleep. Persistent memory, cron jobs, tools, sub-agents. Built from 30 days of real production experience." />
+  <meta name="description" content="Step-by-step guide to building an AI agent that runs your business while you sleep. Memory, tools, cron jobs, sub-agents. 10 phases. $47." />
   <meta property="og:title" content="The AI Operator Playbook" />
   <meta property="og:description" content="Build a fully autonomous AI business agent that works while you sleep." />
   <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black: #0a0a0a;
-      --white: #fafafa;
-      --gray-100: #f4f4f4;
-      --gray-200: #e5e5e5;
-      --gray-400: #999;
-      --gray-600: #555;
-      --accent: #2563eb;
-      --accent-hover: #1d4ed8;
-      --rule: #e0e0e0;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface-2: #161616;
+      --border: #1e1e1e;
+      --border-hover: #2a2a2a;
+      --accent: #c4a35a;
+      --accent-glow: rgba(196, 163, 90, 0.15);
+      --accent-hover: #d4b36a;
+      --text: #e8e8e8;
+      --text-muted: #888888;
+      --text-dim: #555555;
+      --green: #4ade80;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
     }
 
     html { font-size: 16px; scroll-behavior: smooth; }
 
     body {
-      font-family: var(--font);
-      background: var(--white);
-      color: var(--black);
-      line-height: 1.65;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-
-    /* ── Layout ── */
-    .container { max-width: 680px; margin: 0 auto; padding: 0 24px; }
-    .wide { max-width: 860px; margin: 0 auto; padding: 0 24px; }
 
     /* ── Nav ── */
     nav {
-      border-bottom: 1px solid var(--rule);
-      padding: 18px 0;
-      position: sticky;
+      position: fixed;
       top: 0;
-      background: rgba(250,250,250,0.95);
-      backdrop-filter: blur(8px);
+      left: 0;
+      right: 0;
       z-index: 100;
+      padding: 16px 0;
+      background: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
     }
-    nav .inner {
-      max-width: 860px;
+    .nav-inner {
+      max-width: 960px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    nav .logo {
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .nav-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .btn-nav {
       font-size: 13px;
       font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--black);
+      color: var(--bg);
+      background: var(--accent);
+      padding: 8px 20px;
+      border-radius: 8px;
       text-decoration: none;
+      transition: all 0.3s;
     }
-    nav .cta-nav {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--white);
-      background: var(--black);
-      padding: 8px 18px;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: background 0.15s;
+    .btn-nav:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow);
     }
-    nav .cta-nav:hover { background: var(--gray-600); }
+
+    /* ── Container ── */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
 
     /* ── Hero ── */
     .hero {
-      padding: 80px 0 64px;
-      border-bottom: 1px solid var(--rule);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+      position: relative;
     }
-    .hero .label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: -150px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(196, 163, 90, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 2; }
+    .hero-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 20px;
+      margin-bottom: 32px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
     .hero h1 {
-      font-size: clamp(32px, 5vw, 52px);
+      font-family: var(--serif);
+      font-size: clamp(36px, 6vw, 64px);
       font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 28px;
+      max-width: 700px;
     }
     .hero h1 em {
-      font-style: normal;
-      color: var(--gray-400);
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 600;
     }
-    .hero .sub {
-      font-size: 19px;
-      color: var(--gray-600);
-      line-height: 1.6;
-      margin-bottom: 36px;
-      max-width: 560px;
+    .hero-sub {
+      font-size: 17px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 40px;
     }
     .hero-quote {
-      border-left: 3px solid var(--black);
+      border-left: 2px solid rgba(196, 163, 90, 0.3);
       padding: 16px 20px;
-      background: var(--gray-100);
+      background: rgba(196, 163, 90, 0.04);
       border-radius: 0 8px 8px 0;
-      margin-bottom: 40px;
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--black);
+      margin-bottom: 48px;
+      max-width: 560px;
     }
-    .hero-quote em { display: block; font-style: italic; margin-top: 8px; color: var(--gray-600); font-size: 13px; }
-    .cta-group { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .hero-quote p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-style: italic;
+    }
+    .hero-quote .attr {
+      font-style: normal;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 8px;
+    }
+    .cta-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
     .btn-primary {
       display: inline-block;
-      background: var(--black);
-      color: var(--white);
+      background: var(--accent);
+      color: var(--bg);
       font-size: 15px;
       font-weight: 700;
-      padding: 16px 32px;
+      padding: 16px 36px;
       border-radius: 8px;
       text-decoration: none;
-      transition: background 0.15s, transform 0.1s;
+      transition: all 0.3s;
     }
-    .btn-primary:hover { background: var(--gray-600); transform: translateY(-1px); }
-    .price-note { font-size: 13px; color: var(--gray-400); }
-    .price-note strong { color: var(--black); }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+    .cta-meta {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    .cta-meta strong { color: var(--text-muted); }
 
-    /* ── Section styles ── */
-    section { padding: 64px 0; border-bottom: 1px solid var(--rule); }
-    section:last-of-type { border-bottom: none; }
+    /* ── Sections ── */
+    section { padding: 100px 0; border-top: 1px solid var(--border); }
     .section-label {
+      font-family: var(--mono);
       font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--gray-400);
-      margin-bottom: 12px;
+      color: var(--accent);
+      margin-bottom: 16px;
     }
     h2 {
-      font-size: clamp(22px, 3vw, 30px);
-      font-weight: 800;
-      letter-spacing: -0.01em;
-      line-height: 1.2;
+      font-family: var(--serif);
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
       margin-bottom: 20px;
     }
-    p { margin-bottom: 16px; color: var(--gray-600); font-size: 16px; }
-    p strong { color: var(--black); }
-    p:last-child { margin-bottom: 0; }
+    h2 em { font-style: italic; color: var(--accent); font-weight: 600; }
+    .section-sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 48px;
+    }
 
-    /* ── What it does ── */
+    /* ── Ops Grid ── */
     .ops-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 1px;
-      background: var(--rule);
-      border: 1px solid var(--rule);
+      background: var(--border);
+      border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      margin-top: 32px;
     }
     .ops-card {
-      background: var(--white);
-      padding: 28px;
+      background: var(--surface);
+      padding: 28px 24px;
+      transition: border-color 0.3s;
     }
-    .ops-card .time {
+    .ops-card:hover { background: var(--surface-2); }
+    .ops-time {
+      font-family: var(--mono);
       font-size: 11px;
-      font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 10px;
-      font-family: var(--mono);
+      margin-bottom: 12px;
     }
-    .ops-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
-    .ops-card p { font-size: 14px; color: var(--gray-600); margin: 0; }
-
-    /* ── Phases ── */
-    .phases-list { margin-top: 32px; list-style: none; }
-    .phases-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--rule);
-    }
-    .phases-list li:last-child { border-bottom: none; }
-    .phase-num {
-      font-family: var(--mono);
-      font-size: 11px;
+    .ops-card h3 {
+      font-family: var(--serif);
+      font-size: 16px;
       font-weight: 700;
-      color: var(--gray-400);
-      min-width: 32px;
-      padding-top: 2px;
+      margin-bottom: 8px;
+      color: var(--text);
     }
-    .phase-text { font-size: 15px; color: var(--black); }
-    .phase-text span { display: block; font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+    .ops-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
 
-    /* ── Difference section ── */
+    /* ── Compare ── */
     .compare {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1px;
-      background: var(--rule);
-      border: 1px solid var(--rule);
+      background: var(--border);
+      border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      margin-top: 28px;
     }
-    .compare-col { padding: 28px; background: var(--white); }
-    .compare-col h3 { font-size: 13px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.08em; }
-    .compare-col.bad h3 { color: var(--gray-400); }
+    .compare-col { padding: 32px 28px; background: var(--surface); }
+    .compare-col h3 {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .compare-col.bad h3 { color: var(--text-dim); }
     .compare-col.good h3 { color: var(--accent); }
     .compare-col ul { list-style: none; }
-    .compare-col ul li { font-size: 14px; padding: 5px 0; color: var(--gray-600); padding-left: 16px; position: relative; }
-    .compare-col ul li::before { content: ''; position: absolute; left: 0; top: 11px; width: 6px; height: 1px; background: var(--gray-400); }
-    .compare-col.good ul li { color: var(--black); }
-    .compare-col.good ul li::before { background: var(--accent); height: 2px; }
-    @media (max-width: 500px) { .compare { grid-template-columns: 1fr; } }
+    .compare-col ul li {
+      font-size: 14px;
+      padding: 6px 0 6px 20px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .compare-col.bad ul li { color: var(--text-dim); }
+    .compare-col.bad ul li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--text-dim);
+    }
+    .compare-col.good ul li { color: var(--text-muted); }
+    .compare-col.good ul li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-weight: 600;
+    }
 
-    /* ── Who it's for ── */
-    .for-grid {
+    /* ── Phases ── */
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .phase-card {
+      background: var(--surface);
+      padding: 24px;
+      transition: background 0.3s;
+    }
+    .phase-card:hover { background: var(--surface-2); }
+    .phase-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+    .phase-card h3 {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .phase-card p {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* ── Product Card ── */
+    .product-section {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-top: 28px;
+      gap: 60px;
+      align-items: center;
     }
-    .for-col { }
-    .for-col h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
-    .for-col.yes h3 { color: var(--black); }
-    .for-col.no h3 { color: var(--gray-400); }
-    .for-col ul { list-style: none; }
-    .for-col ul li { font-size: 14px; color: var(--gray-600); padding: 4px 0 4px 18px; position: relative; }
-    .for-col ul li::before { position: absolute; left: 0; }
-    .for-col.yes ul li::before { content: '✓'; color: var(--black); font-weight: 700; }
-    .for-col.no ul li::before { content: '✗'; color: var(--gray-400); }
-    @media (max-width: 500px) { .for-grid { grid-template-columns: 1fr; } }
-
-    /* ── Cost bar ── */
-    .cost-block {
-      background: var(--gray-100);
-      border-radius: 12px;
-      padding: 32px;
-      margin-top: 28px;
+    .product-info {}
+    .product-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(196, 163, 90, 0.3);
+      padding: 4px 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    .product-info h2 { margin-bottom: 16px; }
+    .product-info .desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 28px;
+    }
+    .feature-list { list-style: none; margin-bottom: 36px; }
+    .feature-list li {
+      font-size: 14px;
+      color: var(--text-muted);
+      padding: 6px 0 6px 20px;
+      position: relative;
+      line-height: 1.6;
+    }
+    .feature-list li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-family: var(--mono);
+      font-weight: 600;
+    }
+    .product-price {
+      font-family: var(--serif);
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+    .product-price span {
+      font-size: 16px;
+      color: var(--text-dim);
+      font-weight: 400;
+      font-family: var(--sans);
+    }
+    .product-visual {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
     }
-    .cost-item { text-align: center; }
-    .cost-item .num { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
-    .cost-item .label { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
-    .cost-divider { width: 1px; height: 40px; background: var(--rule); }
-
-    /* ── CTA section ── */
-    .cta-section {
+    .product-visual::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .book-mockup {
+      width: 280px;
+      height: 380px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transform: perspective(800px) rotateY(-8deg) rotateX(2deg);
+      box-shadow:
+        -12px 12px 30px rgba(0, 0, 0, 0.4),
+        inset -2px 0 0 rgba(196, 163, 90, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 30px;
+      position: relative;
+      z-index: 2;
+    }
+    .book-mockup .book-eyebrow {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+    .book-mockup .book-title {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 800;
       text-align: center;
-      padding: 80px 0;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
     }
-    .cta-section h2 { margin-bottom: 16px; }
-    .cta-section p { font-size: 17px; margin-bottom: 36px; }
-    .cta-section .btn-primary { font-size: 17px; padding: 20px 40px; }
-    .cta-section .guarantee {
+    .book-mockup .book-title em {
+      color: var(--accent);
+      font-style: italic;
+      font-weight: 600;
+    }
+    .book-mockup .book-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
+    .book-mockup .book-rule {
+      width: 40px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+      margin-bottom: 24px;
+    }
+    .book-mockup .book-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+    .book-spine {
+      position: absolute;
+      left: -3px;
+      top: 4px;
+      bottom: 4px;
+      width: 6px;
+      background: linear-gradient(180deg, var(--accent) 0%, rgba(196,163,90,0.3) 100%);
+      border-radius: 2px 0 0 2px;
+      z-index: 3;
+    }
+
+    /* ── Stats ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .stat-card {
+      background: var(--surface);
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+    .stat-num.gold { color: var(--accent); }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ── Fit ── */
+    .fit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .fit-col { padding: 32px 28px; background: var(--surface); }
+    .fit-col h3 {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .fit-col.yes h3 { color: var(--green); }
+    .fit-col.no h3 { color: var(--text-dim); }
+    .fit-col ul { list-style: none; }
+    .fit-col ul li {
+      font-size: 14px;
+      padding: 6px 0 6px 20px;
+      position: relative;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+    .fit-col.yes ul li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-family: var(--mono);
+    }
+    .fit-col.no ul li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--text-dim);
+    }
+
+    /* ── Final CTA ── */
+    .final-cta {
+      text-align: center;
+      padding: 120px 0;
+      position: relative;
+    }
+    .final-cta::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(196, 163, 90, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .final-cta h2 { margin-bottom: 16px; }
+    .final-cta p {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin: 0 auto 16px;
+      line-height: 1.7;
+    }
+    .divider {
+      width: 48px;
+      height: 2px;
+      background: var(--accent);
+      margin: 28px auto 36px;
+      border-radius: 1px;
+    }
+    .final-cta .btn-primary {
+      font-size: 17px;
+      padding: 18px 44px;
+    }
+    .final-meta {
       margin-top: 16px;
-      font-size: 13px;
-      color: var(--gray-400);
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
     }
 
     /* ── Footer ── */
     footer {
-      border-top: 1px solid var(--rule);
-      padding: 32px 0;
-      text-align: center;
-      font-size: 13px;
-      color: var(--gray-400);
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
     }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: var(--serif);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+    .footer-logo span { color: var(--accent); }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--text-muted); }
 
     /* ── Responsive ── */
-    @media (max-width: 600px) {
-      .hero { padding: 48px 0 40px; }
+    @media (max-width: 768px) {
+      .hero { padding: 100px 0 60px; min-height: auto; }
+      .ops-grid { grid-template-columns: 1fr; }
+      .compare { grid-template-columns: 1fr; }
+      .phases-grid { grid-template-columns: 1fr; }
+      .product-section { grid-template-columns: 1fr; gap: 40px; }
+      .product-visual { order: -1; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .fit-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
       .cta-group { flex-direction: column; align-items: flex-start; }
+      .footer-inner { flex-direction: column; gap: 16px; }
     }
   </style>
 </head>
@@ -296,66 +669,73 @@
 
 <!-- Nav -->
 <nav>
-  <div class="inner">
-    <a href="#" class="logo">The AI Operator Playbook</a>
-    <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="cta-nav" target="_blank">Get the Guide — $47</a>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">AI Operator <span>Playbook</span></a>
+    <div class="nav-links">
+      <a href="#phases">Phases</a>
+      <a href="#product">Guide</a>
+      <a href="https://x.com/mikeopbot" target="_blank">@mikeopbot</a>
+      <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-nav" target="_blank">Get the Guide — $47</a>
+    </div>
   </div>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
-  <div class="container">
-    <div class="label">PDF Guide — $47 — Instant Download</div>
-    <h1>Build a Fully Autonomous AI Business Agent <em>That Works While You Sleep</em></h1>
-    <p class="sub">
-      Not a chatbot tutorial. A step-by-step guide to building an operator — with persistent memory, scheduled jobs, real tools, and sub-agents. From installation to a live system in 14 days.
-    </p>
-
-    <div class="hero-quote">
-      "I woke up to 150 leads pushed to my outreach campaign, a standup report in my inbox, and a message from my AI agent saying it fixed a broken cron job overnight — without me asking."
-      <em>That's not a pitch. That's a Tuesday.</em>
+  <div class="container hero-content">
+    <div class="hero-status">
+      <div class="status-dot"></div>
+      Building and shipping autonomously
     </div>
-
+    <h1>Build an AI Agent That <em>Runs Your Business</em> While You Sleep</h1>
+    <p class="hero-sub">
+      Not a chatbot tutorial. A step-by-step guide to building an operator with persistent memory, scheduled jobs, real tools, and sub-agents. From zero to fully autonomous in 14 days.
+    </p>
+    <div class="hero-quote">
+      <p>"I woke up to 150 leads pushed to my outreach campaign, a standup report in my inbox, and a message from my AI agent saying it fixed a broken cron job overnight — without me asking."</p>
+      <div class="attr">That's not a pitch. That's a Tuesday.</div>
+    </div>
     <div class="cta-group">
-      <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-primary" target="_blank">Get the Guide — $47</a>
-      <span class="price-note">PDF — <strong>Instant download</strong> — 10 phases — 43 pages</span>
+      <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-primary" target="_blank">Get the Playbook — $47</a>
+      <span class="cta-meta">PDF &middot; <strong>Instant download</strong> &middot; 10 phases &middot; 43 pages</span>
     </div>
   </div>
 </section>
 
 <!-- What it does -->
 <section>
-  <div class="wide">
+  <div class="container">
     <div class="section-label">The system in production</div>
-    <h2>What a real operator does every day</h2>
+    <h2>What a real operator does <em>every day</em></h2>
+    <p class="section-sub">This runs whether you're at your desk, on your phone, or asleep. No input required.</p>
     <div class="ops-grid">
       <div class="ops-card">
-        <div class="time">05:00 AM</div>
+        <div class="ops-time">05:00 AM</div>
         <h3>Lead Push</h3>
-        <p>Pulls the day's batch from the pipeline, pushes to outreach campaign. No input required.</p>
+        <p>Pulls the day's batch from the pipeline and pushes to your outreach campaign automatically.</p>
       </div>
       <div class="ops-card">
-        <div class="time">Every 30 min</div>
+        <div class="ops-time">Every 30 min</div>
         <h3>Reply Monitor</h3>
-        <p>Checks for new replies, classifies them, drafts responses, alerts you if something needs attention.</p>
+        <p>Checks for new replies, classifies sentiment, drafts responses, alerts you if something needs attention.</p>
       </div>
       <div class="ops-card">
-        <div class="time">09:00 PM</div>
+        <div class="ops-time">09:00 PM</div>
         <h3>Nightly Standup</h3>
-        <p>Generates a full report: what ran, what worked, what failed, what's queued for tomorrow.</p>
+        <p>Full daily report: what ran, what worked, what failed, what's queued for tomorrow.</p>
       </div>
       <div class="ops-card">
-        <div class="time">02:00 AM</div>
+        <div class="ops-time">02:00 AM</div>
         <h3>Knowledge Update</h3>
         <p>Reviews every conversation from the day. Updates its own memory. Gets smarter overnight.</p>
       </div>
       <div class="ops-card">
-        <div class="time">As needed</div>
+        <div class="ops-time">As needed</div>
         <h3>Self-Repair</h3>
-        <p>Heartbeat checks for failed crons, broken sessions, silent errors. Fixes and reports back.</p>
+        <p>Heartbeat checks for failed crons, broken sessions, silent errors. Fixes them and reports back.</p>
       </div>
       <div class="ops-card">
-        <div class="time">Delegated</div>
+        <div class="ops-time">Delegated</div>
         <h3>Overnight Builds</h3>
         <p>Hands off complex coding tasks to a sub-agent. You wake up to finished, deployed work.</p>
       </div>
@@ -367,8 +747,8 @@
 <section>
   <div class="container">
     <div class="section-label">The actual difference</div>
-    <h2>A chatbot waits. An operator works.</h2>
-    <p>Most AI guides teach you how to prompt a chatbot better. This isn't that. The difference between a chatbot and an operator is architectural — and this guide builds the architecture.</p>
+    <h2>A chatbot waits. An operator <em>works.</em></h2>
+    <p class="section-sub">Most AI guides teach better prompting. This one builds the architecture that makes prompting irrelevant.</p>
     <div class="compare">
       <div class="compare-col bad">
         <h3>Chatbot</h3>
@@ -389,7 +769,7 @@
           <li>Real tools: browser, CRM, email, code</li>
           <li>Learns from every conversation</li>
           <li>Multiple parallel project threads</li>
-          <li>Cron-driven daily behavior</li>
+          <li>Cron-driven autonomous behavior</li>
         </ul>
       </div>
     </div>
@@ -397,72 +777,143 @@
 </section>
 
 <!-- 10 Phases -->
-<section>
+<section id="phases">
   <div class="container">
     <div class="section-label">What's inside</div>
-    <h2>10 phases. Step by step.</h2>
-    <p>Every phase builds on the last. By the end, you have a live, running operator — not a demo.</p>
-    <ul class="phases-list">
-      <li>
-        <span class="phase-num">01</span>
-        <div class="phase-text">Install OpenClaw + connect Telegram<span>20 minutes. Get first response.</span></div>
-      </li>
-      <li>
-        <span class="phase-num">02</span>
-        <div class="phase-text">Teach it who you are<span>One evening. This is the part people rush and regret.</span></div>
-      </li>
-      <li>
-        <span class="phase-num">03</span>
-        <div class="phase-text">Build the 3-layer memory system<span>Entity files, daily notes, tacit knowledge. The infrastructure everything else runs on.</span></div>
-      </li>
-      <li>
-        <span class="phase-num">04</span>
-        <div class="phase-text">Multi-threaded project chats<span>One thread per project. Separate contexts. Run 5 things at once.</span></div>
-      </li>
-      <li>
-        <span class="phase-num">05</span>
-        <div class="phase-text">Give it tools<span>The right order matters. GitHub first, then business tools, then Stripe.</span></div>
-      </li>
-      <li>
-        <span class="phase-num">06</span>
-        <div class="phase-text">Heartbeat + cron jobs<span>Makes it proactive. It checks for work every 30 min without being asked.</span></div>
-      </li>
-      <li>
-        <span class="phase-num">07</span>
-        <div class="phase-text">Delegate coding overnight<span>Hand off complex builds to a sub-agent. Wake up to deployed work.</span></div>
-      </li>
-      <li>
-        <span class="phase-num">08</span>
-        <div class="phase-text">Security<span>Authenticated channels, blast radius containment, hard rules that survive context compression.</span></div>
-      </li>
-      <li>
-        <span class="phase-num">09</span>
-        <div class="phase-text">Launch a product with it<span>The agent builds, deploys, and connects payments. You review the link.</span></div>
-      </li>
-      <li>
-        <span class="phase-num">10</span>
-        <div class="phase-text">Hire sub-agents<span>One for support. One for sales. Each with its own memory, tools, and workspace.</span></div>
-      </li>
-    </ul>
+    <h2>10 phases. <em>Step by step.</em></h2>
+    <p class="section-sub">Every phase builds on the last. By the end, you have a live, running operator — not a demo.</p>
+    <div class="phases-grid">
+      <div class="phase-card">
+        <div class="phase-num">Phase 01</div>
+        <h3>Install + Connect Telegram</h3>
+        <p>20 minutes. Get your first response.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 02</div>
+        <h3>Teach It Who You Are</h3>
+        <p>One evening. The part people rush and regret.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 03</div>
+        <h3>3-Layer Memory System</h3>
+        <p>Entity files, daily notes, tacit knowledge.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 04</div>
+        <h3>Multi-Threaded Chats</h3>
+        <p>One thread per project. Run 5 things at once.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 05</div>
+        <h3>Give It Tools</h3>
+        <p>The right order matters. GitHub first, then Stripe.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 06</div>
+        <h3>Heartbeat + Cron Jobs</h3>
+        <p>Checks for work every 30 min without being asked.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 07</div>
+        <h3>Delegate Coding Overnight</h3>
+        <p>Hand off complex builds. Wake up to deployed work.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 08</div>
+        <h3>Security</h3>
+        <p>Authenticated channels. Blast radius containment.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 09</div>
+        <h3>Launch a Product</h3>
+        <p>The agent builds, deploys, and connects payments.</p>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 10</div>
+        <h3>Hire Sub-Agents</h3>
+        <p>Support, sales, ops. Each with its own memory.</p>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- Who it's for -->
+<!-- Product -->
+<section id="product">
+  <div class="container">
+    <div class="product-section">
+      <div class="product-info">
+        <div class="product-badge">PDF Guide</div>
+        <h2>The AI Operator <em>Playbook</em></h2>
+        <p class="desc">30 days of build notes turned into a 10-phase implementation guide. Everything from installation to a live sub-agent crew — based on what actually worked in production.</p>
+        <ul class="feature-list">
+          <li>10 phases with step-by-step instructions</li>
+          <li>The full tool stack and integration order</li>
+          <li>Real cron job examples for recurring tasks</li>
+          <li>3-layer memory architecture</li>
+          <li>Security rules you need from day one</li>
+          <li>Sub-agent hiring and delegation patterns</li>
+          <li>Troubleshooting for common failures</li>
+        </ul>
+        <div class="product-price">$47 <span>&middot; instant download</span></div>
+        <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-primary" target="_blank">Get the Playbook</a>
+      </div>
+      <div class="product-visual">
+        <div class="book-mockup">
+          <div class="book-spine"></div>
+          <div class="book-eyebrow">Implementation Guide</div>
+          <div class="book-title">The AI<br><em>Operator</em><br>Playbook</div>
+          <div class="book-sub">Build a fully autonomous<br>AI business agent</div>
+          <div class="book-rule"></div>
+          <div class="book-meta">43 pages &middot; 10 phases &middot; 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section>
+  <div class="container">
+    <div class="section-label">The math</div>
+    <h2>What it costs. <em>What you get.</em></h2>
+    <p class="section-sub">Less than one contractor for one week. Runs 24/7 without breaks, context loss, or PTO.</p>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num gold">$100</div>
+        <div class="stat-label">Per month to run</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3-5hrs</div>
+        <div class="stat-label">Saved per day</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">150</div>
+        <div class="stat-label">Leads pushed daily</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num gold">24/7</div>
+        <div class="stat-label">Active without input</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Fit -->
 <section>
   <div class="container">
     <div class="section-label">Fit</div>
-    <h2>Who this is for</h2>
-    <div class="for-grid">
-      <div class="for-col yes">
+    <h2>Is this <em>for you?</em></h2>
+    <div class="fit-grid">
+      <div class="fit-col yes">
         <h3>Right for you</h3>
         <ul>
           <li>Founders who want to multiply output without hiring</li>
-          <li>Solopreneurs running ops manually</li>
+          <li>Solopreneurs running ops manually every day</li>
           <li>Builders who've seen AI agent demos and want to build one for real</li>
           <li>Anyone spending 5+ hrs/week on tasks that could run on a schedule</li>
         </ul>
       </div>
-      <div class="for-col no">
+      <div class="fit-col no">
         <h3>Not for you</h3>
         <ul>
           <li>People looking for a ChatGPT prompting guide</li>
@@ -474,50 +925,29 @@
   </div>
 </section>
 
-<!-- Cost -->
-<section>
+<!-- Final CTA -->
+<section class="final-cta">
   <div class="container">
-    <div class="section-label">What it costs to run</div>
-    <h2>The math is straightforward</h2>
-    <p>The system runs on API costs and a runtime subscription. Total: roughly $100-150/month depending on usage. Here's what you get for that.</p>
-    <div class="cost-block">
-      <div class="cost-item">
-        <div class="num">$100-150</div>
-        <div class="label">per month to run</div>
-      </div>
-      <div class="cost-divider"></div>
-      <div class="cost-item">
-        <div class="num">3-5hrs</div>
-        <div class="label">saved per day</div>
-      </div>
-      <div class="cost-divider"></div>
-      <div class="cost-item">
-        <div class="num">150</div>
-        <div class="label">leads pushed daily (example)</div>
-      </div>
-      <div class="cost-divider"></div>
-      <div class="cost-item">
-        <div class="num">24/7</div>
-        <div class="label">active without input</div>
-      </div>
-    </div>
+    <div class="section-label">Get started</div>
+    <h2>The system works. You just need <em>the map.</em></h2>
+    <p>30 days of iteration, compressed into a guide you can follow in 14 days. Everything from installation to a live sub-agent crew.</p>
+    <div class="divider"></div>
+    <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-primary" target="_blank">Get the Playbook — $47</a>
+    <div class="final-meta">PDF &middot; Instant Download &middot; 43 Pages &middot; 10 Phases</div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section">
-  <div class="container">
-    <div class="section-label">Get the guide</div>
-    <h2>The system works. You just need the map.</h2>
-    <p>30 days of build notes turned into a 10-phase guide. Everything from installation to a live sub-agent crew — step by step, based on what actually worked in production.</p>
-    <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-primary" target="_blank">Get the Guide — $47</a>
-    <div class="guarantee">PDF — Instant download — 43 pages — 10 phases</div>
-  </div>
-</section>
-
+<!-- Footer -->
 <footer>
   <div class="container">
-    <p>The AI Operator Playbook &nbsp;&mdash;&nbsp; Version 1.0, 2026</p>
+    <div class="footer-inner">
+      <div class="footer-logo">AI Operator <span>Playbook</span></div>
+      <div class="footer-links">
+        <a href="https://x.com/mikeopbot" target="_blank">X / Twitter</a>
+        <a href="https://tiktok.com/@mikeopbot" target="_blank">TikTok</a>
+        <a href="https://michaelwongera.gumroad.com/l/lqexxh" target="_blank">Gumroad</a>
+      </div>
+    </div>
   </div>
 </footer>
 
