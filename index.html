@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The AI Operator Playbook — Build a Fully Autonomous AI Business Agent</title>
+  <meta name="description" content="Step-by-step guide to building an AI agent that runs your business while you sleep. Persistent memory, cron jobs, tools, sub-agents. Built from 30 days of real production experience." />
+  <meta property="og:title" content="The AI Operator Playbook" />
+  <meta property="og:description" content="Build a fully autonomous AI business agent that works while you sleep." />
+  <meta property="og:type" content="website" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #fafafa;
+      --gray-100: #f4f4f4;
+      --gray-200: #e5e5e5;
+      --gray-400: #999;
+      --gray-600: #555;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --rule: #e0e0e0;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--black);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+    .wide { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Nav ── */
+    nav {
+      border-bottom: 1px solid var(--rule);
+      padding: 18px 0;
+      position: sticky;
+      top: 0;
+      background: rgba(250,250,250,0.95);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+    nav .inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav .logo {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none;
+    }
+    nav .cta-nav {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--black);
+      padding: 8px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    nav .cta-nav:hover { background: var(--gray-600); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 80px 0 64px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .hero .label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--gray-400);
+    }
+    .hero .sub {
+      font-size: 19px;
+      color: var(--gray-600);
+      line-height: 1.6;
+      margin-bottom: 36px;
+      max-width: 560px;
+    }
+    .hero-quote {
+      border-left: 3px solid var(--black);
+      padding: 16px 20px;
+      background: var(--gray-100);
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 40px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--black);
+    }
+    .hero-quote em { display: block; font-style: italic; margin-top: 8px; color: var(--gray-600); font-size: 13px; }
+    .cta-group { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-block;
+      background: var(--black);
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 16px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--gray-600); transform: translateY(-1px); }
+    .price-note { font-size: 13px; color: var(--gray-400); }
+    .price-note strong { color: var(--black); }
+
+    /* ── Section styles ── */
+    section { padding: 64px 0; border-bottom: 1px solid var(--rule); }
+    section:last-of-type { border-bottom: none; }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 12px;
+    }
+    h2 {
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    p { margin-bottom: 16px; color: var(--gray-600); font-size: 16px; }
+    p strong { color: var(--black); }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── What it does ── */
+    .ops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 32px;
+    }
+    .ops-card {
+      background: var(--white);
+      padding: 28px;
+    }
+    .ops-card .time {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+      font-family: var(--mono);
+    }
+    .ops-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+    .ops-card p { font-size: 14px; color: var(--gray-600); margin: 0; }
+
+    /* ── Phases ── */
+    .phases-list { margin-top: 32px; list-style: none; }
+    .phases-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .phases-list li:last-child { border-bottom: none; }
+    .phase-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-400);
+      min-width: 32px;
+      padding-top: 2px;
+    }
+    .phase-text { font-size: 15px; color: var(--black); }
+    .phase-text span { display: block; font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+
+    /* ── Difference section ── */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 28px;
+    }
+    .compare-col { padding: 28px; background: var(--white); }
+    .compare-col h3 { font-size: 13px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .compare-col.bad h3 { color: var(--gray-400); }
+    .compare-col.good h3 { color: var(--accent); }
+    .compare-col ul { list-style: none; }
+    .compare-col ul li { font-size: 14px; padding: 5px 0; color: var(--gray-600); padding-left: 16px; position: relative; }
+    .compare-col ul li::before { content: ''; position: absolute; left: 0; top: 11px; width: 6px; height: 1px; background: var(--gray-400); }
+    .compare-col.good ul li { color: var(--black); }
+    .compare-col.good ul li::before { background: var(--accent); height: 2px; }
+    @media (max-width: 500px) { .compare { grid-template-columns: 1fr; } }
+
+    /* ── Who it's for ── */
+    .for-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 28px;
+    }
+    .for-col { }
+    .for-col h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+    .for-col.yes h3 { color: var(--black); }
+    .for-col.no h3 { color: var(--gray-400); }
+    .for-col ul { list-style: none; }
+    .for-col ul li { font-size: 14px; color: var(--gray-600); padding: 4px 0 4px 18px; position: relative; }
+    .for-col ul li::before { position: absolute; left: 0; }
+    .for-col.yes ul li::before { content: '✓'; color: var(--black); font-weight: 700; }
+    .for-col.no ul li::before { content: '✗'; color: var(--gray-400); }
+    @media (max-width: 500px) { .for-grid { grid-template-columns: 1fr; } }
+
+    /* ── Cost bar ── */
+    .cost-block {
+      background: var(--gray-100);
+      border-radius: 12px;
+      padding: 32px;
+      margin-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .cost-item { text-align: center; }
+    .cost-item .num { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+    .cost-item .label { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+    .cost-divider { width: 1px; height: 40px; background: var(--rule); }
+
+    /* ── CTA section ── */
+    .cta-section {
+      text-align: center;
+      padding: 80px 0;
+    }
+    .cta-section h2 { margin-bottom: 16px; }
+    .cta-section p { font-size: 17px; margin-bottom: 36px; }
+    .cta-section .btn-primary { font-size: 17px; padding: 20px 40px; }
+    .cta-section .guarantee {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 32px 0;
+      text-align: center;
+      font-size: 13px;
+      color: var(--gray-400);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .hero { padding: 48px 0 40px; }
+      .cta-group { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="inner">
+    <a href="#" class="logo">The AI Operator Playbook</a>
+    <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="cta-nav" target="_blank">Get the Guide — $47</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="label">PDF Guide — $47 — Instant Download</div>
+    <h1>Build a Fully Autonomous AI Business Agent <em>That Works While You Sleep</em></h1>
+    <p class="sub">
+      Not a chatbot tutorial. A step-by-step guide to building an operator — with persistent memory, scheduled jobs, real tools, and sub-agents. From installation to a live system in 14 days.
+    </p>
+
+    <div class="hero-quote">
+      "I woke up to 150 leads pushed to my outreach campaign, a standup report in my inbox, and a message from my AI agent saying it fixed a broken cron job overnight — without me asking."
+      <em>That's not a pitch. That's a Tuesday.</em>
+    </div>
+
+    <div class="cta-group">
+      <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-primary" target="_blank">Get the Guide — $47</a>
+      <span class="price-note">PDF — <strong>Instant download</strong> — 10 phases — 43 pages</span>
+    </div>
+  </div>
+</section>
+
+<!-- What it does -->
+<section>
+  <div class="wide">
+    <div class="section-label">The system in production</div>
+    <h2>What a real operator does every day</h2>
+    <div class="ops-grid">
+      <div class="ops-card">
+        <div class="time">05:00 AM</div>
+        <h3>Lead Push</h3>
+        <p>Pulls the day's batch from the pipeline, pushes to outreach campaign. No input required.</p>
+      </div>
+      <div class="ops-card">
+        <div class="time">Every 30 min</div>
+        <h3>Reply Monitor</h3>
+        <p>Checks for new replies, classifies them, drafts responses, alerts you if something needs attention.</p>
+      </div>
+      <div class="ops-card">
+        <div class="time">09:00 PM</div>
+        <h3>Nightly Standup</h3>
+        <p>Generates a full report: what ran, what worked, what failed, what's queued for tomorrow.</p>
+      </div>
+      <div class="ops-card">
+        <div class="time">02:00 AM</div>
+        <h3>Knowledge Update</h3>
+        <p>Reviews every conversation from the day. Updates its own memory. Gets smarter overnight.</p>
+      </div>
+      <div class="ops-card">
+        <div class="time">As needed</div>
+        <h3>Self-Repair</h3>
+        <p>Heartbeat checks for failed crons, broken sessions, silent errors. Fixes and reports back.</p>
+      </div>
+      <div class="ops-card">
+        <div class="time">Delegated</div>
+        <h3>Overnight Builds</h3>
+        <p>Hands off complex coding tasks to a sub-agent. You wake up to finished, deployed work.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Chatbot vs Operator -->
+<section>
+  <div class="container">
+    <div class="section-label">The actual difference</div>
+    <h2>A chatbot waits. An operator works.</h2>
+    <p>Most AI guides teach you how to prompt a chatbot better. This isn't that. The difference between a chatbot and an operator is architectural — and this guide builds the architecture.</p>
+    <div class="compare">
+      <div class="compare-col bad">
+        <h3>Chatbot</h3>
+        <ul>
+          <li>Starts from zero every session</li>
+          <li>Waits for you to ask something</li>
+          <li>Can only respond, not act</li>
+          <li>Forgets everything overnight</li>
+          <li>One conversation at a time</li>
+          <li>No scheduled behavior</li>
+        </ul>
+      </div>
+      <div class="compare-col good">
+        <h3>Operator</h3>
+        <ul>
+          <li>Persistent memory across weeks</li>
+          <li>Runs jobs whether you ask or not</li>
+          <li>Real tools: browser, CRM, email, code</li>
+          <li>Learns from every conversation</li>
+          <li>Multiple parallel project threads</li>
+          <li>Cron-driven daily behavior</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 Phases -->
+<section>
+  <div class="container">
+    <div class="section-label">What's inside</div>
+    <h2>10 phases. Step by step.</h2>
+    <p>Every phase builds on the last. By the end, you have a live, running operator — not a demo.</p>
+    <ul class="phases-list">
+      <li>
+        <span class="phase-num">01</span>
+        <div class="phase-text">Install OpenClaw + connect Telegram<span>20 minutes. Get first response.</span></div>
+      </li>
+      <li>
+        <span class="phase-num">02</span>
+        <div class="phase-text">Teach it who you are<span>One evening. This is the part people rush and regret.</span></div>
+      </li>
+      <li>
+        <span class="phase-num">03</span>
+        <div class="phase-text">Build the 3-layer memory system<span>Entity files, daily notes, tacit knowledge. The infrastructure everything else runs on.</span></div>
+      </li>
+      <li>
+        <span class="phase-num">04</span>
+        <div class="phase-text">Multi-threaded project chats<span>One thread per project. Separate contexts. Run 5 things at once.</span></div>
+      </li>
+      <li>
+        <span class="phase-num">05</span>
+        <div class="phase-text">Give it tools<span>The right order matters. GitHub first, then business tools, then Stripe.</span></div>
+      </li>
+      <li>
+        <span class="phase-num">06</span>
+        <div class="phase-text">Heartbeat + cron jobs<span>Makes it proactive. It checks for work every 30 min without being asked.</span></div>
+      </li>
+      <li>
+        <span class="phase-num">07</span>
+        <div class="phase-text">Delegate coding overnight<span>Hand off complex builds to a sub-agent. Wake up to deployed work.</span></div>
+      </li>
+      <li>
+        <span class="phase-num">08</span>
+        <div class="phase-text">Security<span>Authenticated channels, blast radius containment, hard rules that survive context compression.</span></div>
+      </li>
+      <li>
+        <span class="phase-num">09</span>
+        <div class="phase-text">Launch a product with it<span>The agent builds, deploys, and connects payments. You review the link.</span></div>
+      </li>
+      <li>
+        <span class="phase-num">10</span>
+        <div class="phase-text">Hire sub-agents<span>One for support. One for sales. Each with its own memory, tools, and workspace.</span></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Who it's for -->
+<section>
+  <div class="container">
+    <div class="section-label">Fit</div>
+    <h2>Who this is for</h2>
+    <div class="for-grid">
+      <div class="for-col yes">
+        <h3>Right for you</h3>
+        <ul>
+          <li>Founders who want to multiply output without hiring</li>
+          <li>Solopreneurs running ops manually</li>
+          <li>Builders who've seen AI agent demos and want to build one for real</li>
+          <li>Anyone spending 5+ hrs/week on tasks that could run on a schedule</li>
+        </ul>
+      </div>
+      <div class="for-col no">
+        <h3>Not for you</h3>
+        <ul>
+          <li>People looking for a ChatGPT prompting guide</li>
+          <li>Anyone who wants theory without building</li>
+          <li>People expecting overnight passive income</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Cost -->
+<section>
+  <div class="container">
+    <div class="section-label">What it costs to run</div>
+    <h2>The math is straightforward</h2>
+    <p>The system runs on API costs and a runtime subscription. Total: roughly $100-150/month depending on usage. Here's what you get for that.</p>
+    <div class="cost-block">
+      <div class="cost-item">
+        <div class="num">$100-150</div>
+        <div class="label">per month to run</div>
+      </div>
+      <div class="cost-divider"></div>
+      <div class="cost-item">
+        <div class="num">3-5hrs</div>
+        <div class="label">saved per day</div>
+      </div>
+      <div class="cost-divider"></div>
+      <div class="cost-item">
+        <div class="num">150</div>
+        <div class="label">leads pushed daily (example)</div>
+      </div>
+      <div class="cost-divider"></div>
+      <div class="cost-item">
+        <div class="num">24/7</div>
+        <div class="label">active without input</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="section-label">Get the guide</div>
+    <h2>The system works. You just need the map.</h2>
+    <p>30 days of build notes turned into a 10-phase guide. Everything from installation to a live sub-agent crew — step by step, based on what actually worked in production.</p>
+    <a href="https://michaelwongera.gumroad.com/l/lqexxh" class="btn-primary" target="_blank">Get the Guide — $47</a>
+    <div class="guarantee">PDF — Instant download — 43 pages — 10 phases</div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>The AI Operator Playbook &nbsp;&mdash;&nbsp; Version 1.0, 2026</p>
+  </div>
+</footer>
+
+</body>
+</html>
